@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sassy Cocktails for Jess 💅</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .mood-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .find-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .find-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .find-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .cocktail-name {
+            color: #667eea;
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .cocktail-emoji {
+            text-align: center;
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .mood-match {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mood-match h3 {
+            color: #764ba2;
+            margin-bottom: 10px;
+        }
+
+        .recipe h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+        }
+
+        .ingredients, .instructions {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ingredients h4, .instructions h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .ingredients ul, .instructions ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .ingredients li, .instructions li {
+            margin-bottom: 5px;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            padding: 15px;
+            background: #fde8e8;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💅✨ Sassy Cocktails for Jess ✨💅</h1>
+        <p class="subtitle">Tell me how you're feeling in 5 words, I'll find your PERFECT drink 🍸🎉</p>
+        
+        <div class="mood-inputs">
+            <div class="input-group">
+                <label for="mood1">Mood 1</label>
+                <input type="text" id="mood1" placeholder="e.g. energetic">
+            </div>
+            <div class="input-group">
+                <label for="mood2">Mood 2</label>
+                <input type="text" id="mood2" placeholder="e.g. happy">
+            </div>
+            <div class="input-group">
+                <label for="mood3">Mood 3</label>
+                <input type="text" id="mood3" placeholder="e.g. adventurous">
+            </div>
+            <div class="input-group">
+                <label for="mood4">Mood 4</label>
+                <input type="text" id="mood4" placeholder="e.g. social">
+            </div>
+            <div class="input-group">
+                <label for="mood5">Mood 5</label>
+                <input type="text" id="mood5" placeholder="e.g. celebratory">
+            </div>
+        </div>
+
+        <button class="find-btn" onclick="findCocktail()">💃 Find My Cocktail! 🍹✨</button>
+
+        <div class="error" id="error">Please fill in all 5 mood words!</div>
+
+        <div class="result" id="result">
+            <div class="cocktail-emoji" id="emoji"></div>
+            <div class="cocktail-name" id="cocktailName"></div>
+            
+            <div class="mood-match">
+                <h3>Why This Matches Your Mood:</h3>
+                <p id="moodExplanation"></p>
+            </div>
+
+            <div class="recipe">
+                <h3>Recipe:</h3>
+                <div class="ingredients">
+                    <h4>Ingredients:</h4>
+                    <ul id="ingredients"></ul>
+                </div>
+                <div class="instructions">
+                    <h4>Instructions:</h4>
+                    <ol id="instructions"></ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const cocktails = {
+            energetic: {
+                name: "Espresso Martini",
+                emoji: "☕",
+                ingredients: [
+                    "2 oz vodka",
+                    "1 oz coffee liqueur (Kahlúa)",
+                    "1 oz freshly brewed espresso",
+                    "½ oz simple syrup",
+                    "Coffee beans for garnish"
+                ],
+                instructions: [
+                    "Brew a shot of espresso and let it cool slightly",
+                    "Fill a cocktail shaker with ice",
+                    "Add vodka, coffee liqueur, espresso, and simple syrup",
+                    "Shake vigorously for 15-20 seconds until well-chilled",
+                    "Strain into a chilled martini glass",
+                    "Garnish with 3 coffee beans"
+                ],
+                keywords: ["energetic", "excited", "active", "hyper", "awake", "alert", "pumped", "lively"]
+            },
+            relaxed: {
+                name: "Mai Tai",
+                emoji: "🌺",
+                ingredients: [
+                    "2 oz aged rum",
+                    "¾ oz fresh lime juice",
+                    "½ oz orange curaçao",
+                    "¼ oz orgeat syrup",
+                    "¼ oz simple syrup",
+                    "Mint sprig and lime wheel for garnish"
+                ],
+                instructions: [
+                    "Fill a cocktail shaker with ice",
+                    "Add rum, lime juice, curaçao, orgeat, and simple syrup",
+                    "Shake well for 10-15 seconds",
+                    "Strain into a rocks glass filled with crushed ice",
+                    "Garnish with mint sprig and lime wheel",
+                    "Sip slowly and relax"
+                ],
+                keywords: ["relaxed", "calm", "peaceful", "chill", "mellow", "tranquil", "serene", "easy"]
+            },
+            sophisticated: {
+                name: "French 75",
+                emoji: "🥂",
+                ingredients: [
+                    "1 oz gin",
+                    "½ oz fresh lemon juice",
+                    "½ oz simple syrup",
+                    "3 oz champagne",
+                    "Lemon twist for garnish"
+                ],
+                instructions: [
+                    "Fill a cocktail shaker with ice",
+                    "Add gin, lemon juice, and simple syrup",
+                    "Shake well for 10 seconds",
+                    "Strain into a champagne flute",
+                    "Top with champagne",
+                    "Garnish with a lemon twist"
+                ],
+                keywords: ["sophisticated", "elegant", "classy", "refined", "fancy", "upscale", "chic", "stylish"]
+            },
+            adventurous: {
+                name: "Mezcal Margarita",
+                emoji: "🔥",
+                ingredients: [
+                    "2 oz mezcal",
+                    "1 oz fresh lime juice",
+                    "¾ oz Cointreau",
+                    "½ oz agave syrup",
+                    "Tajín for rim",
+                    "Lime wheel for garnish"
+                ],
+                instructions: [
+                    "Rim a rocks glass with Tajín and fill with ice",
+                    "Fill a cocktail shaker with ice",
+                    "Add mezcal, lime juice, Cointreau, and agave syrup",
+                    "Shake vigorously for 15 seconds",
+                    "Strain into the prepared glass",
+                    "Garnish with a lime wheel"
+                ],
+                keywords: ["adventurous", "bold", "daring", "brave", "wild", "spontaneous", "fearless", "edgy"]
+            },
+            romantic: {
+                name: "Strawberry Basil Smash",
+                emoji: "💕",
+                ingredients: [
+                    "2 oz gin",
+                    "¾ oz fresh lemon juice",
+                    "½ oz simple syrup",
+                    "4-5 fresh strawberries",
+                    "6-8 basil leaves",
+                    "Strawberry and basil for garnish"
+                ],
+                instructions: [
+                    "In a shaker, muddle strawberries and basil leaves",
+                    "Add ice, gin, lemon juice, and simple syrup",
+                    "Shake well for 15 seconds",
+                    "Double strain into a rocks glass over ice",
+                    "Garnish with a strawberry and basil leaf",
+                    "Share with someone special"
+                ],
+                keywords: ["romantic", "loving", "sweet", "tender", "intimate", "affectionate", "passionate", "warm"]
+            },
+            playful: {
+                name: "Aperol Spritz",
+                emoji: "🍊",
+                ingredients: [
+                    "3 oz Prosecco",
+                    "2 oz Aperol",
+                    "1 oz soda water",
+                    "Orange slice for garnish",
+                    "Ice"
+                ],
+                instructions: [
+                    "Fill a wine glass with ice",
+                    "Add Prosecco",
+                    "Add Aperol",
+                    "Top with soda water",
+                    "Stir gently",
+                    "Garnish with an orange slice"
+                ],
+                keywords: ["playful", "fun", "cheerful", "silly", "lighthearted", "jovial", "bubbly", "carefree"]
+            },
+            mysterious: {
+                name: "Black Manhattan",
+                emoji: "🌙",
+                ingredients: [
+                    "2 oz rye whiskey",
+                    "1 oz Averna amaro",
+                    "2 dashes orange bitters",
+                    "Luxardo cherry for garnish"
+                ],
+                instructions: [
+                    "Fill a mixing glass with ice",
+                    "Add whiskey, amaro, and bitters",
+                    "Stir for 30 seconds until well-chilled",
+                    "Strain into a chilled coupe glass",
+                    "Garnish with a Luxardo cherry",
+                    "Sip slowly in dim lighting"
+                ],
+                keywords: ["mysterious", "dark", "intriguing", "enigmatic", "secretive", "sultry", "moody", "deep"]
+            },
+            confident: {
+                name: "Old Fashioned",
+                emoji: "💪",
+                ingredients: [
+                    "2 oz bourbon or rye whiskey",
+                    "1 sugar cube",
+                    "2-3 dashes Angostura bitters",
+                    "Orange peel",
+                    "Luxardo cherry"
+                ],
+                instructions: [
+                    "Place sugar cube in rocks glass",
+                    "Add bitters and a splash of water",
+                    "Muddle until sugar dissolves",
+                    "Add whiskey and large ice cube",
+                    "Stir gently for 20-30 seconds",
+                    "Express orange peel over drink and garnish with peel and cherry"
+                ],
+                keywords: ["confident", "strong", "powerful", "bold", "assured", "self-assured", "determined", "assertive"]
+            },
+            tropical: {
+                name: "Piña Colada",
+                emoji: "🥥",
+                ingredients: [
+                    "2 oz white rum",
+                    "3 oz pineapple juice",
+                    "2 oz coconut cream",
+                    "1 cup crushed ice",
+                    "Pineapple wedge and cherry for garnish"
+                ],
+                instructions: [
+                    "Add rum, pineapple juice, coconut cream, and ice to blender",
+                    "Blend until smooth",
+                    "Pour into a hurricane glass",
+                    "Garnish with pineapple wedge and cherry",
+                    "Add a fun umbrella",
+                    "Imagine you're on a beach"
+                ],
+                keywords: ["tropical", "vacation", "sunny", "beachy", "paradise", "escape", "island", "warm"]
+            },
+            nostalgic: {
+                name: "Whiskey Sour",
+                emoji: "🍋✨",
+                ingredients: [
+                    "2 oz bourbon whiskey",
+                    "¾ oz fresh lemon juice",
+                    "½ oz simple syrup",
+                    "½ oz egg white (optional)",
+                    "Angostura bitters",
+                    "Lemon wheel and cherry for garnish"
+                ],
+                instructions: [
+                    "Add all ingredients to a shaker without ice",
+                    "Dry shake for 10 seconds (to emulsify egg white)",
+                    "Add ice and shake vigorously for 15 seconds",
+                    "Strain into a rocks glass over ice",
+                    "Dash bitters on top for decoration",
+                    "Garnish with lemon wheel and cherry"
+                ],
+                keywords: ["nostalgic", "classic", "traditional", "vintage", "timeless", "retro", "sentimental", "old-school"]
+            },
+            sassy: {
+                name: "Cosmopolitan",
+                emoji: "💋💕",
+                ingredients: [
+                    "1.5 oz vodka (Citron if you have it)",
+                    "1 oz Cointreau",
+                    "½ oz fresh lime juice",
+                    "¼ oz cranberry juice",
+                    "Lime wheel or orange twist"
+                ],
+                instructions: [
+                    "Fill a shaker with ice (we're fancy like that)",
+                    "Add vodka, Cointreau, lime juice, and cranberry",
+                    "Shake like you mean it for 15 seconds",
+                    "Strain into a chilled martini glass",
+                    "Garnish with lime wheel",
+                    "Channel your inner Carrie Bradshaw"
+                ],
+                keywords: ["sassy", "confident", "fabulous", "fierce", "girl-boss", "glamorous", "bold", "diva"]
+            },
+            cozy: {
+                name: "Hot Toddy",
+                emoji: "🍯☕",
+                ingredients: [
+                    "2 oz bourbon or whiskey",
+                    "1 tbsp honey",
+                    "2 tsp fresh lemon juice",
+                    "1 cup hot water",
+                    "Cinnamon stick",
+                    "Lemon wheel and star anise"
+                ],
+                instructions: [
+                    "Add honey and lemon juice to a mug",
+                    "Pour in hot water and stir until honey dissolves",
+                    "Add whiskey",
+                    "Stir gently",
+                    "Garnish with cinnamon stick, lemon wheel, and star anise",
+                    "Curl up with a blanket and enjoy"
+                ],
+                keywords: ["cozy", "warm", "comfort", "snuggly", "relaxing", "homey", "comforting", "toasty"]
+            },
+            fancy: {
+                name: "Champagne Cocktail",
+                emoji: "🥂👑",
+                ingredients: [
+                    "1 sugar cube",
+                    "2-3 dashes Angostura bitters",
+                    "4 oz champagne",
+                    "Lemon twist",
+                    "Optional: splash of cognac"
+                ],
+                instructions: [
+                    "Place sugar cube in champagne flute",
+                    "Saturate with bitters",
+                    "Fill with champagne",
+                    "Optional: add a splash of cognac for extra elegance",
+                    "Express lemon twist over drink",
+                    "Sip with your pinky out"
+                ],
+                keywords: ["fancy", "elegant", "luxury", "celebration", "special", "glamorous", "upscale", "bougie"]
+            },
+            spicy: {
+                name: "Jalapeño Margarita",
+                emoji: "🌶️🔥",
+                ingredients: [
+                    "2 oz tequila (reposado)",
+                    "1 oz fresh lime juice",
+                    "½ oz Cointreau",
+                    "½ oz agave syrup",
+                    "2-3 slices jalapeño",
+                    "Salt for rim"
+                ],
+                instructions: [
+                    "Rim glass with salt and fill with ice",
+                    "In shaker, muddle jalapeño slices",
+                    "Add tequila, lime juice, Cointreau, agave, and ice",
+                    "Shake vigorously for 15 seconds",
+                    "Strain into prepared glass",
+                    "Garnish with jalapeño slice (if you dare!)"
+                ],
+                keywords: ["spicy", "hot", "fiery", "bold", "zesty", "intense", "daring", "kick"]
+            },
+            fresh: {
+                name: "Mojito",
+                emoji: "🌿💚",
+                ingredients: [
+                    "2 oz white rum",
+                    "1 oz fresh lime juice",
+                    "2 tsp sugar",
+                    "8-10 fresh mint leaves",
+                    "Soda water",
+                    "Lime wheel and mint sprig"
+                ],
+                instructions: [
+                    "Add mint leaves and sugar to glass",
+                    "Muddle gently (don't destroy the mint!)",
+                    "Add lime juice and rum",
+                    "Fill glass with ice",
+                    "Top with soda water",
+                    "Stir gently and garnish with lime and mint"
+                ],
+                keywords: ["fresh", "minty", "crisp", "clean", "refreshing", "bright", "cool", "light"]
+            },
+            festive: {
+                name: "Cranberry Moscow Mule",
+                emoji: "🎄✨",
+                ingredients: [
+                    "2 oz vodka",
+                    "½ oz lime juice",
+                    "2 oz cranberry juice",
+                    "4 oz ginger beer",
+                    "Fresh cranberries and rosemary"
+                ],
+                instructions: [
+                    "Fill copper mug (or glass) with ice",
+                    "Add vodka, lime juice, and cranberry juice",
+                    "Top with ginger beer",
+                    "Stir gently",
+                    "Garnish with fresh cranberries and rosemary sprig",
+                    "Perfect for holiday vibes!"
+                ],
+                keywords: ["festive", "holiday", "celebration", "party", "merry", "jolly", "cheerful", "seasonal"]
+            },
+            sophisticated: {
+                name: "Negroni",
+                emoji: "🍊🎩",
+                ingredients: [
+                    "1 oz gin",
+                    "1 oz Campari",
+                    "1 oz sweet vermouth",
+                    "Orange peel"
+                ],
+                instructions: [
+                    "Fill rocks glass with ice",
+                    "Add gin, Campari, and vermouth",
+                    "Stir for 20-30 seconds",
+                    "Express orange peel over drink",
+                    "Drop peel into glass",
+                    "Contemplate life's complexities"
+                ],
+                keywords: ["sophisticated", "bitter", "complex", "refined", "cultured", "worldly", "distinguished", "intellectual"]
+            },
+            dreamy: {
+                name: "Lavender Lemon Drop",
+                emoji: "💜☁️",
+                ingredients: [
+                    "2 oz vodka",
+                    "¾ oz fresh lemon juice",
+                    "½ oz lavender simple syrup",
+                    "½ oz triple sec",
+                    "Sugar for rim",
+                    "Lemon twist and lavender sprig"
+                ],
+                instructions: [
+                    "Rim martini glass with sugar",
+                    "Fill shaker with ice",
+                    "Add vodka, lemon juice, lavender syrup, and triple sec",
+                    "Shake for 15 seconds",
+                    "Strain into prepared glass",
+                    "Garnish with lemon twist and lavender"
+                ],
+                keywords: ["dreamy", "ethereal", "whimsical", "magical", "floaty", "fantasy", "enchanting", "heavenly"]
+            },
+            powerful: {
+                name: "Manhattan",
+                emoji: "💪🌃",
+                ingredients: [
+                    "2 oz rye whiskey",
+                    "1 oz sweet vermouth",
+                    "2 dashes Angostura bitters",
+                    "Luxardo cherry"
+                ],
+                instructions: [
+                    "Fill mixing glass with ice",
+                    "Add whiskey, vermouth, and bitters",
+                    "Stir for 30-40 seconds until well-chilled",
+                    "Strain into chilled coupe glass",
+                    "Garnish with Luxardo cherry",
+                    "Own the room"
+                ],
+                keywords: ["powerful", "strong", "commanding", "authoritative", "dominant", "forceful", "mighty", "boss"]
+            }
+        };
+
+        function findCocktail() {
+            // Get mood values
+            const moods = [
+                document.getElementById('mood1').value.trim().toLowerCase(),
+                document.getElementById('mood2').value.trim().toLowerCase(),
+                document.getElementById('mood3').value.trim().toLowerCase(),
+                document.getElementById('mood4').value.trim().toLowerCase(),
+                document.getElementById('mood5').value.trim().toLowerCase()
+            ];
+
+            // Validate inputs
+            const error = document.getElementById('error');
+            if (moods.some(m => m === '')) {
+                error.classList.add('show');
+                setTimeout(() => error.classList.remove('show'), 3000);
+                return;
+            }
+            error.classList.remove('show');
+
+            // Find best matching cocktail
+            let bestMatch = null;
+            let maxScore = 0;
+
+            for (const [category, cocktail] of Object.entries(cocktails)) {
+                let score = 0;
+                moods.forEach(mood => {
+                    if (cocktail.keywords.some(keyword => 
+                        keyword.includes(mood) || mood.includes(keyword)
+                    )) {
+                        score++;
+                    }
+                });
+                
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestMatch = cocktail;
+                }
+            }
+
+            // If no matches, pick a random one
+            if (maxScore === 0) {
+                const categories = Object.keys(cocktails);
+                const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+                bestMatch = cocktails[randomCategory];
+            }
+
+            // Display result
+            displayCocktail(bestMatch, moods, maxScore);
+        }
+
+        function displayCocktail(cocktail, moods, matchScore) {
+            document.getElementById('emoji').textContent = cocktail.emoji;
+            document.getElementById('cocktailName').textContent = cocktail.name;
+            
+            // Create mood explanation
+            let explanation = `Based on your vibe (${moods.join(', ')}), `;
+            if (matchScore > 0) {
+                explanation += `we found ${matchScore} mood match${matchScore > 1 ? 'es' : ''} with this cocktail! `;
+            }
+            explanation += `This drink captures your energy perfectly.`;
+            document.getElementById('moodExplanation').textContent = explanation;
+
+            // Display ingredients
+            const ingredientsList = document.getElementById('ingredients');
+            ingredientsList.innerHTML = '';
+            cocktail.ingredients.forEach(ingredient => {
+                const li = document.createElement('li');
+                li.textContent = ingredient;
+                ingredientsList.appendChild(li);
+            });
+
+            // Display instructions
+            const instructionsList = document.getElementById('instructions');
+            instructionsList.innerHTML = '';
+            cocktail.instructions.forEach(instruction => {
+                const li = document.createElement('li');
+                li.textContent = instruction;
+                instructionsList.appendChild(li);
+            });
+
+            // Show result
+            document.getElementById('result').classList.add('show');
+            
+            // Smooth scroll to result
+            setTimeout(() => {
+                document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 100);
+        }
+
+        // Allow Enter key to submit
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    findCocktail();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
