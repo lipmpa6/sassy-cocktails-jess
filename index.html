@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<!-- saved from url=(0049)file:///Users/philiplipman/Downloads/index_3.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sassy Cocktails for Jess 💅</title>
     <style>
@@ -99,6 +99,29 @@
             transform: translateY(0);
         }
 
+        .clear-btn {
+            width: 100%;
+            padding: 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 15px;
+        }
+
+        .clear-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(231, 76, 60, 0.4);
+        }
+
+        .clear-btn:active {
+            transform: translateY(0);
+        }
+
         .result {
             margin-top: 30px;
             padding: 25px;
@@ -193,7 +216,7 @@
 <body>
     <div class="container">
         <h1>💅✨ Sassy Cocktails for Jess ✨💅</h1>
-        <p class="subtitle">Tell me how you're feeling in 5 words, I'll find your PERFECT drink 🍸🎉</p>
+        <p class="subtitle">Tell me how you're feeling (1 to 5 words), I'll find your PERFECT drink 🍸🎉</p>
         
         <div class="mood-inputs">
             <div class="input-group">
@@ -219,8 +242,10 @@
         </div>
 
         <button class="find-btn" onclick="findCocktail()">💃 Find My Cocktail! 🍹✨</button>
+        
+        <button class="clear-btn" onclick="clearAll()" style="display: none;" id="clearBtn">🔄 Clear &amp; Try Again ✨</button>
 
-        <div class="error" id="error">Please fill in all 5 mood words!</div>
+        <div class="error" id="error">Please enter at least 1 mood word!</div>
 
         <div class="result" id="result">
             <div class="cocktail-emoji" id="emoji"></div>
@@ -636,7 +661,7 @@
 
         function findCocktail() {
             // Get mood values
-            const moods = [
+            const allMoods = [
                 document.getElementById('mood1').value.trim().toLowerCase(),
                 document.getElementById('mood2').value.trim().toLowerCase(),
                 document.getElementById('mood3').value.trim().toLowerCase(),
@@ -644,9 +669,13 @@
                 document.getElementById('mood5').value.trim().toLowerCase()
             ];
 
-            // Validate inputs
+            // Filter out empty moods (only use filled ones)
+            const moods = allMoods.filter(m => m !== '');
+
+            // Validate inputs - need at least 1 mood
             const error = document.getElementById('error');
-            if (moods.some(m => m === '')) {
+            if (moods.length === 0) {
+                error.textContent = 'Please enter at least 1 mood word!';
                 error.classList.add('show');
                 setTimeout(() => error.classList.remove('show'), 3000);
                 return;
@@ -689,7 +718,9 @@
             document.getElementById('cocktailName').textContent = cocktail.name;
             
             // Create mood explanation
-            let explanation = `Based on your vibe (${moods.join(', ')}), `;
+            const moodCount = moods.length;
+            const moodWord = moodCount === 1 ? 'vibe' : 'vibes';
+            let explanation = `Based on your ${moodWord} (${moods.join(', ')}), `;
             if (matchScore > 0) {
                 explanation += `we found ${matchScore} mood match${matchScore > 1 ? 'es' : ''} with this cocktail! `;
             }
@@ -717,6 +748,9 @@
             // Show result
             document.getElementById('result').classList.add('show');
             
+            // Show clear button
+            document.getElementById('clearBtn').style.display = 'block';
+            
             // Smooth scroll to result
             setTimeout(() => {
                 document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -731,6 +765,26 @@
                 }
             });
         });
+
+        // Clear all function
+        function clearAll() {
+            // Clear all input fields
+            document.getElementById('mood1').value = '';
+            document.getElementById('mood2').value = '';
+            document.getElementById('mood3').value = '';
+            document.getElementById('mood4').value = '';
+            document.getElementById('mood5').value = '';
+            
+            // Hide the result
+            document.getElementById('result').classList.remove('show');
+            
+            // Hide the clear button
+            document.getElementById('clearBtn').style.display = 'none';
+            
+            // Focus on first input
+            document.getElementById('mood1').focus();
+        }
     </script>
-</body>
-</html>
+
+
+</body></html>
